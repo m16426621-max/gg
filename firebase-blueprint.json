@@ -1,0 +1,80 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile containing authentication details and role (admin or candidate)",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "email": { "type": "string", "format": "email", "description": "User Gmail address" },
+        "displayName": { "type": "string", "description": "Display name of candidate" },
+        "photoURL": { "type": "string", "description": "Profile picture URL" },
+        "role": { "type": "string", "enum": ["admin", "candidate"], "description": "Role in application" },
+        "createdAt": { "type": "string", "description": "ISO timestamp of creation" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Question": {
+      "title": "Question",
+      "description": "Police exam question item",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier of the question" },
+        "subject": { "type": "string", "description": "Subject category" },
+        "topic": { "type": "string", "description": "Specific topic" },
+        "question": { "type": "string", "description": "Question text" },
+        "options": {
+          "type": "array",
+          "description": "Choice options array of size 4"
+        },
+        "correctAnswerIndex": { "type": "number", "description": "Index 0 to 3" },
+        "explanation": { "type": "string", "description": "Detailed explanation" },
+        "tips": { "type": "string", "description": "Tips or memory formula" },
+        "difficulty": { "type": "string", "enum": ["easy", "medium", "hard"] },
+        "source": { "type": "string", "description": "Source of question" },
+        "authorUid": { "type": "string", "description": "UID of author" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["id", "subject", "topic", "question", "options", "correctAnswerIndex", "explanation"]
+    },
+    "LeaderboardEntry": {
+      "title": "LeaderboardEntry",
+      "description": "Leaderboard exam score record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Entry ID" },
+        "userId": { "type": "string", "description": "Auth UID of the examinee" },
+        "candidateName": { "type": "string", "description": "Display name" },
+        "examMode": { "type": "string", "description": "Exam mode title" },
+        "score": { "type": "number", "description": "Score obtained" },
+        "maxScore": { "type": "number", "description": "Total question count" },
+        "percentage": { "type": "number", "description": "Percentage score" },
+        "timeSpentSeconds": { "type": "number", "description": "Time taken in seconds" },
+        "passed": { "type": "boolean", "description": "Whether passed 60% standard" },
+        "completedAt": { "type": "string", "description": "Completion timestamp" }
+      },
+      "required": ["id", "candidateName", "examMode", "score", "maxScore", "percentage", "passed"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile with role"
+    },
+    "/questions/{questionId}": {
+      "schema": "Question",
+      "description": "Exam questions bank - read by all, created/edited/deleted exclusively by admin"
+    },
+    "/leaderboard/{entryId}": {
+      "schema": "LeaderboardEntry",
+      "description": "Leaderboard rank entries - public read, created by candidates"
+    },
+    "/test/{docId}": {
+      "schema": {
+        "type": "object",
+        "description": "Connection test document"
+      },
+      "description": "Connectivity test ping path"
+    }
+  }
+}
